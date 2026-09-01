@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, voice-agent ]
   workflow_dispatch:
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SolarDryer-APK
+          name: SolarDryer-VoiceAgent-APK
           path: SolarDryer-debug.apk
           if-no-files-found: error
           retention-days: 30
