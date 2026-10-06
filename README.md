@@ -4,7 +4,7 @@ Native Android controller for the ESP32 Smart Solar Dryer REST API.
 
 The app can:
 
-- connect to the dryer by local IP or `solar-dryer.local`
+- connect to the dryer using the ESP32 local IP configured in the app
 - read inside/outside temperature and humidity
 - read live weight, initial weight, remaining percentage and drying notice
 - tare and calibrate the HX711 load cell

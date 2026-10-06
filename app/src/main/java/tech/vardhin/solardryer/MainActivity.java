@@ -34,7 +34,7 @@ public class MainActivity extends android.app.Activity {
 
     private static final String PREFS = "solar_dryer";
     private static final String KEY_BASE_URL = "base_url";
-    private static final String DEFAULT_URL = "http://solar-dryer.local";
+    private static final String DEFAULT_URL = "";
     private static final String NOTICE_CHANNEL = "dryer_notices";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -82,6 +82,10 @@ public class MainActivity extends android.app.Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+        String savedUrl = preferences.getString(KEY_BASE_URL, "");
+        if (savedUrl != null && savedUrl.toLowerCase(Locale.US).contains(".local")) {
+            preferences.edit().remove(KEY_BASE_URL).apply();
+        }
         createNotificationChannel();
         requestNotificationPermissionIfNeeded();
         setContentView(buildUi());
@@ -126,6 +130,7 @@ public class MainActivity extends android.app.Activity {
         root.addView(space(14));
         root.addView(section("Connection"));
         baseUrlInput = input(preferences.getString(KEY_BASE_URL, DEFAULT_URL), false);
+        baseUrlInput.setHint("ESP32 IP, e.g. 192.168.43.123");
         root.addView(baseUrlInput);
 
         LinearLayout connectionButtons = row();
@@ -245,7 +250,7 @@ public class MainActivity extends android.app.Activity {
     private void saveBaseUrl() {
         String value = baseUrlInput.getText().toString().trim();
         if (value.isEmpty()) {
-            toast("Enter the ESP32 IP or solar-dryer.local");
+            toast("Enter the ESP32 IP address");
             return;
         }
         if (!value.startsWith("http://") && !value.startsWith("https://")) value = "http://" + value;
@@ -257,13 +262,13 @@ public class MainActivity extends android.app.Activity {
     }
 
     private String baseUrl() {
-        String value = baseUrlInput.getText().toString().trim();
-        if (value.isEmpty()) value = DEFAULT_URL;
-        return value;
+        return baseUrlInput.getText().toString().trim();
     }
 
     private ApiClient api() {
-        return new ApiClient(baseUrl());
+        String url = baseUrl();
+        if (url.isEmpty()) throw new IllegalStateException("Enter and save the ESP32 IP first");
+        return new ApiClient(url);
     }
 
     private void testConnection() {
