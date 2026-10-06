@@ -83,7 +83,7 @@ public class MainActivity extends android.app.Activity {
         super.onCreate(savedInstanceState);
         preferences = getSharedPreferences(PREFS, MODE_PRIVATE);
         String savedUrl = preferences.getString(KEY_BASE_URL, "");
-        if (savedUrl != null && (savedUrl.contains("solar-dryer.local") || savedUrl.contains("solar.dryer"))) {
+        if (savedUrl != null && savedUrl.toLowerCase(Locale.US).contains(".local")) {
             preferences.edit().remove(KEY_BASE_URL).apply();
         }
         createNotificationChannel();
