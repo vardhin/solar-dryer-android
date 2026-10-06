@@ -34,7 +34,7 @@ public class VoiceAgentActivity extends android.app.Activity {
     private static final int REQ_MIC = 901;
     private static final String PREFS = "solar_dryer";
     private static final String KEY_BASE_URL = "base_url";
-    private static final String DEFAULT_URL = "http://solar-dryer.local";
+    private static final String DEFAULT_URL = "";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final WavRecorder recorder = new WavRecorder();
@@ -288,7 +288,9 @@ public class VoiceAgentActivity extends android.app.Activity {
     }
 
     private JSONObject executeTool(String name, JSONObject args) throws Exception {
-        ApiClient api = new ApiClient(prefs.getString(KEY_BASE_URL, DEFAULT_URL));
+        String dryerUrl = prefs.getString(KEY_BASE_URL, DEFAULT_URL).trim();
+        if (dryerUrl.isEmpty()) throw new Exception("Set and save the ESP32 IP in the main app first");
+        ApiClient api = new ApiClient(dryerUrl);
         switch (name) {
             case "get_status": return api.get("/api/status");
             case "get_temperature": return api.get("/api/temp");
